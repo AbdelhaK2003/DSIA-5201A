@@ -7,7 +7,7 @@ CinéTracker est une application web conteneurisée permettant aux utilisateurs 
 -  Gestion des films personnels (CRUD)
 -  Titre, genre, année, statut (vu / à voir), note, commentaire
 -  Récupération des films par utilisateur
--  Tests unitaires disponibles (à compléter)
+
 
 ## Stack technique
 - **Backend** : Python + FastAPI
