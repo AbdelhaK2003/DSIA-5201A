@@ -17,6 +17,9 @@ CinéTracker est une application web conteneurisée permettant aux utilisateurs 
 - **Conteneurisation** : Docker + Docker Compose
 
 ## Lancement du projet
+
 https://github.com/AbdelhaK2003/DSIA-5201A.git
+
 cd DSIA-5201A
+
 docker-compose up --build

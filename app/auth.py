@@ -13,11 +13,11 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-
+#Fonction pour verifier le mote de passe
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
-
+#Fonction pour hasher le mote de passe
 def get_password_hash(password):
     return pwd_context.hash(password)
 
@@ -28,11 +28,11 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-
+#Fonction pour retourner l'utilisateur
 def get_user(db: Session, username: str):
     return db.query(models.User).filter(models.User.username == username).first()
 
-
+#Authentification vérification
 def authenticate_user(db: Session, username: str, password: str):
     user = get_user(db, username)
     if not user or not verify_password(password, user.hashed_password):

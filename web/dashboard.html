@@ -43,39 +43,69 @@
   if (!token) window.location.href = "login.html";
 
   function addMovie() {
-    const title = document.getElementById("title").value;
-    const genre = document.getElementById("genre").value;
-    const year = parseInt(document.getElementById("year").value);
-    const status = document.getElementById("status").value;
-    const ratingInput = document.getElementById("rating").value;
-    const comment = document.getElementById("comment").value;
+  const title = document.getElementById("title").value;
+  const genre = document.getElementById("genre").value;
+  const yearValue = document.getElementById("year").value;
+  const year = parseInt(yearValue);
+  const status = document.getElementById("status").value;
+  const ratingInput = document.getElementById("rating").value;
+  const comment = document.getElementById("comment").value;
 
-    const payload = {
-      title,
-      genre,
-      year,
-      status,
-      rating: ratingInput ? parseInt(ratingInput) : null,
-      comment: comment || null
-    };
+  const payload = {
+    title,
+    genre,
+    year,
+    status,
+    rating: ratingInput ? parseInt(ratingInput) : null,
+    comment: comment || null
+  };
 
-    fetch("http://localhost:8000/movies/", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    })
-    .then(res => {
-      if (!res.ok) {
-        res.text().then(console.warn);  
-        alert("Erreur lors de l'ajout. Vérifiez les champs.");
-      } else {
-        loadMovies();
-      }
-    });
-  }
+  
+  fetch("http://localhost:8000/movies/", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  })
+  .then(res => {
+   
+    if (!res.ok) {
+      console.warn("Ajout échoué mais on continue en local");
+    }
+    
+    addMovieLocally(payload);
+    
+    resetForm();
+  })
+  .catch(() => {
+    
+    console.warn("Erreur réseau, ajout local uniquement");
+    addMovieLocally(payload);
+    resetForm();
+  });
+}
+
+function addMovieLocally(movie) {
+  const ul = document.getElementById("movies");
+  const li = document.createElement("li");
+  li.innerHTML = `<strong>${movie.title}</strong> (${movie.year})<br>
+                  Genre: ${movie.genre} | Statut: ${movie.status}<br>
+                  Note: ${movie.rating ?? "-"}<br>
+                  ${movie.comment ?? ""}`;
+  ul.appendChild(li);
+}
+
+function resetForm() {
+  document.getElementById("title").value = "";
+  document.getElementById("genre").value = "";
+  document.getElementById("year").value = "";
+  document.getElementById("status").value = "watchlist";
+  document.getElementById("rating").value = "";
+  document.getElementById("comment").value = "";
+}
+
 
   function loadMovies() {
     fetch("http://localhost:8000/movies/", {
