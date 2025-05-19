@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - CinéTracker</title>
+  <style>
+    body { background: #1e1e2f; color: #fff; font-family: Arial; padding: 40px; }
+    h1, h2 { text-align: center; color: #ffcc00; }
+    section { max-width: 600px; margin: auto; background: #2c2c3d; padding: 20px; border-radius: 12px; margin-top: 20px; }
+    input, select, textarea, button {
+      width: 100%; padding: 10px; margin-top: 10px;
+      border-radius: 8px; border: none; font-size: 16px;
+    }
+    button { background: #ffcc00; color: #1e1e2f; font-weight: bold; cursor: pointer; }
+    ul { list-style: none; padding: 0; }
+    li { background: #3d3d4f; margin-top: 10px; padding: 12px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h1>🎬 CinéTracker</h1>
+  <section>
+    <h2>Ajouter un film</h2>
+    <input id="title" placeholder="Titre">
+    <input id="genre" placeholder="Genre">
+    <input id="year" type="number" placeholder="Année">
+    <select id="status">
+      <option value="watchlist">À voir</option>
+      <option value="seen">Vu</option>
+    </select>
+    <input id="rating" type="number" placeholder="Note (optionnel)">
+    <textarea id="comment" placeholder="Commentaire (optionnel)"></textarea>
+    <button onclick="addMovie()">Ajouter</button>
+  </section>
+
+  <section>
+    <h2>🎞️ Mes films</h2>
+    <ul id="movies"></ul>
+  </section>
+
+  <script>
+  const token = localStorage.getItem("token");
+  if (!token) window.location.href = "login.html";
+
+  function addMovie() {
+    const title = document.getElementById("title").value;
+    const genre = document.getElementById("genre").value;
+    const year = parseInt(document.getElementById("year").value);
+    const status = document.getElementById("status").value;
+    const ratingInput = document.getElementById("rating").value;
+    const comment = document.getElementById("comment").value;
+
+    const payload = {
+      title,
+      genre,
+      year,
+      status,
+      rating: ratingInput ? parseInt(ratingInput) : null,
+      comment: comment || null
+    };
+
+    fetch("http://localhost:8000/movies/", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    })
+    .then(res => {
+      if (!res.ok) {
+        res.text().then(console.warn);  
+        alert("Erreur lors de l'ajout. Vérifiez les champs.");
+      } else {
+        loadMovies();
+      }
+    });
+  }
+
+  function loadMovies() {
+    fetch("http://localhost:8000/movies/", {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      const ul = document.getElementById("movies");
+      ul.innerHTML = "";
+      data.forEach(movie => {
+        const li = document.createElement("li");
+        li.innerHTML = `<strong>${movie.title}</strong> (${movie.year})<br>
+                        Genre: ${movie.genre} | Statut: ${movie.status}<br>
+                        Note: ${movie.rating ?? "-"}<br>
+                        ${movie.comment ?? ""}`;
+        ul.appendChild(li);
+      });
+    });
+  }
+
+  loadMovies();
+</script>
+</body>
+</html>

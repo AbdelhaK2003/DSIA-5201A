@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inscription - CinéTracker</title>
+  <style>
+    body { background: #1e1e2f; color: #fff; font-family: Arial; padding: 40px; text-align: center; }
+    input, button { padding: 10px; margin: 10px; border-radius: 6px; width: 250px; border: none; }
+    button { background-color: #ffcc00; font-weight: bold; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>🎬 Créer un compte</h1>
+  <div style="display: flex; flex-direction: column; align-items: center;">
+  <input id="username" placeholder="Nom d'utilisateur" />
+  <input id="password" type="password" placeholder="Mot de passe" />
+  
+</div>
+  <br>
+  <button onclick="register()">S'inscrire</button>
+  <p>Déjà un compte ? <a href="login.html">Se connecter</a></p>
+
+  <script>
+    function register() {
+      fetch("http://localhost:8000/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: document.getElementById("username").value,
+          password: document.getElementById("password").value,
+        })
+      })
+      .then(res => {
+        if (res.ok) {
+          alert("Inscription réussie ! Vous pouvez vous connecter.");
+          window.location.href = "login.html";
+        } else {
+          alert("Erreur : Ce nom d'utilisateur existe déjà.");
+        }
+      });
+    }
+  </script>
+</body>
+</html>
+
